@@ -6,7 +6,11 @@ inputFile :: FilePath
 inputFile = "resources/day1/input.txt"
 
 fuelRequirementFromMass :: Integer -> Integer
-fuelRequirementFromMass input = (floor $ (fromIntegral input) / 3) - 2
+fuelRequirementFromMass input = 
+    let initialRequirement = (floor $ (fromIntegral input) / 3) - 2 in
+        if initialRequirement > 0
+        then initialRequirement + (fuelRequirementFromMass initialRequirement)
+        else 0
 
 fuelRequirementFromInputLine :: String -> Integer
 fuelRequirementFromInputLine line = fuelRequirementFromMass $ read line
