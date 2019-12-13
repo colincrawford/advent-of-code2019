@@ -10,8 +10,12 @@ inputFile = "resources/day2/input.txt"
 
 type Instructions = Array Integer Integer
 type OpCode = Integer
+type InstructionPointer = Integer
 
-add :: Instructions -> Integer -> Instructions
+type Noun = Integer
+type Verb = Integer
+
+add :: Instructions -> InstructionPointer -> Instructions
 add instructions currentIndex =
     let firstNumLocation = instructions ! (currentIndex + 1)
         secondNumLocation = instructions ! (currentIndex + 2)
@@ -21,7 +25,7 @@ add instructions currentIndex =
         sum = firstNum + secondNum
     in instructions // [(outputLocation, sum)]
 
-multiply :: Instructions -> Integer -> Instructions
+multiply :: Instructions -> InstructionPointer -> Instructions
 multiply instructions currentIndex =
     let firstNumLocation = instructions ! (currentIndex + 1)
         secondNumLocation = instructions ! (currentIndex + 2)
@@ -31,12 +35,12 @@ multiply instructions currentIndex =
         product = firstNum * secondNum
     in instructions // [(outputLocation, product)]
 
-runOpCode :: Instructions -> Integer -> OpCode -> (Integer, Instructions)
+runOpCode :: Instructions -> InstructionPointer -> OpCode -> (InstructionPointer, Instructions)
 runOpCode instructions currentInx 1 = (currentInx + 4, add instructions currentInx)
 runOpCode instructions currentInx 2 = (currentInx + 4, multiply instructions currentInx)
 runOpCode instructions currentInx opCode =  error $ "Invalid Opp Code " ++ (show opCode)
 
-execInstructions :: Instructions -> Integer -> Instructions
+execInstructions :: Instructions -> InstructionPointer -> Instructions
 execInstructions instructions currentInx = 
     let opCode = instructions ! currentInx in
         if opCode == 99
@@ -51,8 +55,19 @@ parseInt txt =
     Right (int, _) -> int
     Left _ -> error "Cannot convert this text to number"
 
-applyInitialUpdates :: Instructions -> Instructions
-applyInitialUpdates instructions = instructions // [(1, 12), (2, 2)]
+applyInitialUpdates :: Instructions -> Noun -> Verb -> Instructions
+applyInitialUpdates instructions noun verb = instructions // [(1, noun), (2, verb)]
+
+findNounAndVerb :: Integer -> Integer -> Integer -> Instructions -> (Noun, Verb)
+findNounAndVerb target 101 verb instructions = error "Noun and verb hit their max values"
+findNounAndVerb target noun 101 instructions = findNounAndVerb target (noun + 1) 0 instructions
+findNounAndVerb target noun verb instructions =
+    let instructionsWithInitialUpdates = applyInitialUpdates instructions noun verb
+        processedInstructions = execInstructions instructionsWithInitialUpdates 0
+        firstValue = processedInstructions ! 0 in
+        if firstValue == target
+        then (noun, verb)
+        else findNounAndVerb target noun (verb + 1) instructions
 
 main :: IO ()
 main = do
@@ -62,8 +77,8 @@ main = do
         parsedInstructions = Prelude.map parseInt instructionChars
         instructionsLength = toInteger $ (Prelude.length parsedInstructions) - 1
         instructions = Data.Array.listArray (0 :: Integer, instructionsLength) parsedInstructions
-        instructionsWithInitialUpdates = applyInitialUpdates instructions
-        processedInstructions = execInstructions instructionsWithInitialUpdates 0 in
-        putStrLn $ show $ processedInstructions ! 0
+        target = 19690720 
+        (noun, verb) = findNounAndVerb target 0 0 instructions in
+        putStrLn $ show $ (100 * noun + verb)
     hClose inHandle 
     
