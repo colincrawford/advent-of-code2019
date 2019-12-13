@@ -19,7 +19,7 @@ main :: IO ()
 main = do
     handle <- openFile inputFile ReadMode
     content <- hGetContents handle
-    let fileLines = lines content in
-        let numbers = map fuelRequirementFromInputLine fileLines in
+    let fileLines = lines content
+        numbers = map fuelRequirementFromInputLine fileLines in
         putStrLn $ show $ foldl (+) 0 numbers
     hClose handle 

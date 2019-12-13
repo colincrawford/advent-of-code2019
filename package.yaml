@@ -27,8 +27,18 @@ library:
 
 executables:
   day1-exe:
-    main:                Day1.hs
-    source-dirs:         app
+    main:                Main.hs
+    source-dirs:         day1
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - advent-of-code2019
+
+  day2-exe:
+    main:                Main.hs
+    source-dirs:         day2
     ghc-options:
     - -threaded
     - -rtsopts
