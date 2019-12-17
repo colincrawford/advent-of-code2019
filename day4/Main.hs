@@ -28,7 +28,7 @@ hasOnlyIncreasingDigits pass =
 hasTwoAdjacentDigits :: Password -> Bool
 hasTwoAdjacentDigits pass =
     let digits = T.pack $ show pass in
-        any (\t -> (T.length t) >= 2) $ T.group digits
+        any (\t -> (T.length t) == 2) $ T.group digits
 
 parseInputRange :: String -> (Integer, Integer)
 parseInputRange str = 
